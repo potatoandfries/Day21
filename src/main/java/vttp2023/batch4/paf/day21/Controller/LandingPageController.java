@@ -1,41 +1,49 @@
-package vttp2023.batch4.paf.day21.Controller;
+    package vttp2023.batch4.paf.day21.Controller;
 
-import java.util.List;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Controller;
+    import org.springframework.web.bind.annotation.GetMapping;
+    import org.springframework.web.bind.annotation.PathVariable;
+    import org.springframework.web.bind.annotation.RequestParam;
+    import org.springframework.web.servlet.ModelAndView;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.servlet.ModelAndView;
+    import vttp2023.batch4.paf.day21.Repo.BookRepo;
+    import vttp2023.batch4.paf.day21.Service.SummaryService;
+    import vttp2023.batch4.paf.day21.model.Book;
 
-import vttp2023.batch4.paf.day21.Repo.BookRepository;
-import vttp2023.batch4.paf.day21.model.Book;
+    @Controller
+    public class LandingPageController {
 
-@Controller
-public class LandingPageController {
-    
+        @Autowired
+        SummaryService svc;
 
-    @Autowired
-    BookRepository bookRepo;
+        @Autowired
+        BookRepo repo;
 
-    @GetMapping("/")
-    public ModelAndView showLandingPage() {
-        // show the landing page.
-        ModelAndView mav = new ModelAndView("landingPage");
-        //i already attached modeled the data in the repo.
-        List<Book> bookList = bookRepo.findAllBook();
-        // tell them what is what for thymeleaf to show.
-        mav.addObject("BookList", bookList);
-        return mav;
+
+        @GetMapping(path={"/"})
+        public ModelAndView getIndex(){ //show index page
+            
+            ModelAndView mav = new ModelAndView("landingPage.html");
+            mav.addObject("BookList", svc.bookSummary(repo.findAllBooks()));
+            return mav;
+            
+        }
+        @GetMapping(path={"/search"})
+        public ModelAndView showForm(@RequestParam String format,@RequestParam float ratings){
+            
+            ModelAndView mav = new ModelAndView("listing.html");
+            mav.addObject("SearchBookList", repo.findBookbyFormatandRating(format,ratings));
+            return mav;
+            
+        }
+        @GetMapping(path="/book/{book_id}")
+        public ModelAndView showBookDetails(@PathVariable("book_id") String book_id){
+
+            ModelAndView mav = new ModelAndView("books.html");
+            Book book = repo.findBookByid(book_id);
+            mav.addObject("book", book);
+            return mav;
+        }
+
     }
-    //this shit you learn from SSF assessment
-    @GetMapping("/book/{title}")
-    public ModelAndView showBookDetails(@PathVariable("title") String title) {
-    ModelAndView mav = new ModelAndView("books"); // Assuming you have a view named "bookDetails".
-    Book book = bookRepo.findBooksByTitle(title);
-    mav.addObject("book", book);
-    System.out.println(book.getBook_id());
-    return mav;
-}
-}
-

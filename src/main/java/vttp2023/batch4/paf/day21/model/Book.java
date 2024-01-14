@@ -1,5 +1,6 @@
 package vttp2023.batch4.paf.day21.model;
 
+
 public class Book {
     
     private String book_id;
@@ -91,6 +92,10 @@ public class Book {
         this.image_url = image_url;
     }
 
-
+    @Override
+    public String toString(){
+        return "Book [bookId="+ book_id+", title= "+title+ ",authosr=" +authors +",decription=" + description
+        +", pages=" + pages + ", ratings=" +rating +".image=" + image_url +"]";
+    }
     
 }
